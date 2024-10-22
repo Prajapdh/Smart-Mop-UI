@@ -1,177 +1,149 @@
 <script>
-  import ControlPanel from './components/ControlPanel.svelte';
-  import CleaningStatus from './components/CleaningStatus.svelte';
-  import BatteryHealth from './components/BatteryHealth.svelte';
-  import Schedule from './components/Schedule.svelte';
-  import History from './components/History.svelte';
+  import { faPlay, faBatteryFull, faWater, faSync, faMapMarkerAlt, faTachometerAlt, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+  import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 
-  // Mop status and properties
   let mopStatus = 'Idle';
   let batteryLevel = 100;
-  let cleaningMode = 'Normal';
-  let progress = 0;
   let waterTankLevel = 'Full';
+  let currentLocation = 'Living Room';
+  let cleaningSpeed = 'Medium';
+  let cleaningMode = 'Normal';
+  let alerts = [];
 
-  // Toggle Mop Start/Stop
   function toggleMopStatus() {
-    if (mopStatus === 'Idle') {
-      mopStatus = 'Cleaning';
-      progress = 0; // Reset progress
-    } else {
-      mopStatus = 'Idle';
-    }
+    mopStatus = mopStatus === 'Idle' ? 'Cleaning' : 'Idle';
   }
 
-  // Toggle Battery Status
-  function toggleBatteryLevel() {
-    batteryLevel = batteryLevel === 100 ? 20 : 100; // Simulate low/full battery
+  function simulateAlert(alertType) {
+    if (!alerts.includes(alertType)) alerts.push(alertType);
   }
 
-  // Toggle Water Tank Status
-  function toggleWaterTankLevel() {
-    waterTankLevel = waterTankLevel === 'Full' ? 'Empty' : 'Full'; // Simulate empty/full tank
-  }
-
-  // Toggle Cleaning Mode
-  function toggleCleaningMode() {
-    cleaningMode = cleaningMode === 'Normal' ? 'Deep Clean' : 'Normal'; // Switch between modes
+  function dismissAlert(alertType) {
+    alerts = alerts.filter(alert => alert !== alertType);
   }
 </script>
 
-<!-- Page container with centered heading -->
-<div class="page-container">
-  <!-- Heading for Smart Mop -->
-  <header class="heading">
-    <h1>Smart Mop</h1>
-  </header>
+<div class="flex h-screen bg-gray-100">
+  <!-- Sidebar -->
+  <aside class="bg-gray-800 w-64 flex flex-col text-white p-4 space-y-4">
+    <button class="sidebar-button">
+      <FontAwesomeIcon icon={faPlay} class="mr-2"/> On/Off
+    </button>
+    <button class="sidebar-button">
+      <FontAwesomeIcon icon={faSync} class="mr-2"/> Cleaning Mode
+    </button>
+    <button class="sidebar-button">
+      <FontAwesomeIcon icon={faWater} class="mr-2"/> Water Spray
+    </button>
+    <button class="sidebar-button">
+      <FontAwesomeIcon icon={faBatteryFull} class="mr-2"/> Battery Level
+    </button>
+    <button class="sidebar-button">
+      <FontAwesomeIcon icon={faSync} class="mr-2"/> Auto Mode
+    </button>
+    <button class="sidebar-button">
+      <FontAwesomeIcon icon={faSync} class="mr-2"/> Cleaning Schedule
+    </button>
+    <button class="sidebar-button">
+      <FontAwesomeIcon icon={faSync} class="mr-2"/> Rotation Control
+    </button>
+    <button class="sidebar-button">
+      <FontAwesomeIcon icon={faWater} class="mr-2"/> Water Refill Alert
+    </button>
+    <button class="sidebar-button">
+      <FontAwesomeIcon icon={faSync} class="mr-2"/> Simulation/Test
+    </button>
+    <button class="sidebar-button">
+      <FontAwesomeIcon icon={faSync} class="mr-2"/> History Logs
+    </button>
 
-  <div class="grid-container">
-    <!-- Surrounding Tiles -->
-    <div class="tile">
-      <CleaningStatus {mopStatus} {progress} {waterTankLevel} />
+    <div class="mt-auto flex flex-col items-center text-center">
+      <img src="profile-pic.png" alt="User Profile" class="w-16 h-16 rounded-full mb-2"/>
+      <p>John Smith</p>
+      <p class="text-sm text-gray-400">johnsmith@email.abc</p>
+      <button class="mt-4 w-full bg-gray-600 hover:bg-gray-500 py-2">Settings</button>
+      <button class="w-full bg-red-600 hover:bg-red-500 py-2 mt-2">Log out</button>
     </div>
-    <div class="tile">
-      <BatteryHealth {batteryLevel} />
-    </div>
-    <div class="tile">
-      <Schedule />
-    </div>
-    <div class="tile">
-      <History />
-    </div>
+  </aside>
 
-    <!-- Central Control Tile -->
-    <div class="tile">
-      <ControlPanel 
-        {cleaningMode} 
-        {mopStatus} 
-        on:toggleStartStop={toggleMopStatus}
-        on:changeMode={toggleCleaningMode}
-      />
-    </div>
+  <!-- Main Content -->
+  <main class="p-6 flex-grow grid grid-cols-1 md:grid-cols-2 gap-6">
     
-    <!-- Bottom-right buttons for simulating actions -->
-    <div class="simulation-buttons">
-      <button on:click={toggleMopStatus}>
-        {mopStatus === 'Idle' ? 'Start Cleaning' : 'Stop Cleaning'}
+    <!-- On/Off Control -->
+    <section class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-lg font-semibold mb-2">Mop Status</h2>
+      <div class="flex items-center">
+        <FontAwesomeIcon icon={faPlay} class="text-green-500 mr-2"/>
+        <span class="text-gray-700">Current Status: {mopStatus}</span>
+      </div>
+      <button class="mt-4 w-full py-2 bg-blue-500 text-white rounded-lg" on:click={toggleMopStatus}>
+        {mopStatus === 'Idle' ? 'Start Mop' : 'Stop Mop'}
       </button>
-      <button on:click={toggleWaterTankLevel}>
-        {waterTankLevel === 'Full' ? 'Empty Water Tank' : 'Fill Water Tank'}
+    </section>
+
+    <!-- Battery Percentage -->
+    <section class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-lg font-semibold mb-2">Battery</h2>
+      <div class="flex items-center">
+        <FontAwesomeIcon icon={faBatteryFull} class="text-green-500 mr-2"/>
+        <span class="text-gray-700">Battery Level: {batteryLevel}%</span>
+      </div>
+    </section>
+
+    <!-- Scheduled Cleaning -->
+    <section class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-lg font-semibold mb-2">Scheduled Cleaning</h2>
+      <div>
+        <p class="text-gray-700">Current Location: {currentLocation}</p>
+        <p class="text-gray-700">Cleaning Speed: {cleaningSpeed}</p>
+        <p class="text-gray-700">Cleaning Mode: {cleaningMode}</p>
+      </div>
+    </section>
+
+    <!-- Water Tank Level -->
+    <section class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-lg font-semibold mb-2">Water Tank</h2>
+      <div class="flex items-center">
+        <FontAwesomeIcon icon={faWater} class="text-blue-500 mr-2"/>
+        <span class="text-gray-700">Water Tank Level: {waterTankLevel}</span>
+      </div>
+    </section>
+
+    <!-- Current Location -->
+    <section class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-lg font-semibold mb-2">Location</h2>
+      <div class="flex items-center">
+        <FontAwesomeIcon icon={faMapMarkerAlt} class="text-red-500 mr-2"/>
+        <span class="text-gray-700">Current Location: {currentLocation}</span>
+      </div>
+    </section>
+
+    <!-- Alerts -->
+    <section class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-lg font-semibold mb-2">Alerts</h2>
+      {#if alerts.length > 0}
+        <ul class="space-y-2">
+          {#each alerts as alert}
+            <li class="flex justify-between items-center">
+              <span class="text-red-500"><FontAwesomeIcon icon={faExclamationCircle} class="mr-2"/> {alert}</span>
+              <button class="text-blue-500" on:click={() => dismissAlert(alert)}>Dismiss</button>
+            </li>
+          {/each}
+        </ul>
+      {:else}
+        <p class="text-gray-700">No alerts</p>
+      {/if}
+      <button class="mt-4 w-full py-2 bg-blue-500 text-white rounded-lg" on:click={() => simulateAlert('Refill Water Tank')}>
+        Simulate Alert: Refill Water Tank
       </button>
-      <button on:click={toggleBatteryLevel}>
-        {batteryLevel === 100 ? 'Low Battery' : 'Full Battery'}
+      <button class="mt-2 w-full py-2 bg-blue-500 text-white rounded-lg" on:click={() => simulateAlert('Replace Mop Pads')}>
+        Simulate Alert: Replace Mop Pads
       </button>
-      <button on:click={toggleCleaningMode}>
-        {cleaningMode === 'Normal' ? 'Switch to Deep Clean' : 'Switch to Normal Mode'}
-      </button>
-    </div>
-  </div>
+    </section>
+
+  </main>
 </div>
 
 <style>
-  /* Page container that holds everything */
-  .page-container {
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    background-color: #f5f5f5;
-    padding-top: 20px;
-  }
-
-  /* Heading styles */
-  .heading {
-    width: 100%;
-    text-align: center;
-    margin-bottom: 30px;
-  }
-
-  .heading h1 {
-    font-size: 3rem;
-    color: #333;
-    font-family: 'Arial', sans-serif;
-    font-weight: bold;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin: 0;
-    padding: 0;
-  }
-
-  /* Grid container covering full screen with equal column width */
-  .grid-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Three equal-width columns */
-    gap: 20px;
-    height: auto;
-    padding: 20px;
-    width: 80vw;
-    justify-items: center;
-    align-items: start;
-  }
-
-  /* Tile Styles */
-  .tile {
-    background-color: #ffffff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
-    width: 100%; /* Each tile will take the full width of its column */
-    max-width: 300px; /* Max width to ensure it doesn't stretch too much */
-    height: auto; /* Height will adjust based on content */
-  }
-
-  .tile:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-  }
-
-  /* Bottom-right simulation buttons */
-  .simulation-buttons {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #ffffff;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .simulation-buttons button {
-    padding: 10px 15px;
-    border: none;
-    background-color: #007bff;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-
-  .simulation-buttons button:hover {
-    background-color: #0056b3;
-  }
+  /* Tailwind styles already applied via CDN or build */
 </style>
