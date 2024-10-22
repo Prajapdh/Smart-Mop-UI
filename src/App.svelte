@@ -20,159 +20,86 @@
   }
 </script>
 
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-
-  .top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #1e1e2f;
-    color: white;
-    padding: 15px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  }
-
-  .app-title {
-    font-size: 24px;
-    font-weight: bold;
-  }
-
-  .user-options {
-    display: flex;
-    align-items: center;
-  }
-
-  .user-options span {
-    margin-left: 20px;
-    cursor: pointer;
-    font-size: 16px;
-  }
-
-  .tiles-container {
-    display: grid;
-    grid-template-columns: 1fr 2fr 1fr;
-    gap: 20px;
-    padding: 20px;
-  }
-
-  .tile {
-    background-color: #f5f5f5;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  }
-
-  .cleaning-controls {
-    grid-column: 2;
-    grid-row: 1 / span 2;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .cleaning-controls img {
-    width: 100%;
-    max-width: 300px;
-    margin-bottom: 20px;
-  }
-
-  .tile button {
-    margin-top: 10px;
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-
-  .tile button:hover {
-    background-color: #0056b3;
-  }
-</style>
-
-<div class="top-bar">
-  <div class="app-title">SmartMop</div>
-  <div class="user-options">
-    <span>User Profile</span>
-    <span>Settings</span>
-    <span>Logout</span>
+<div class="top-bar sticky top-0 w-full bg-gray-800 text-white flex justify-between items-center p-4 shadow-lg">
+  <div class="app-title text-2xl font-bold">SmartMop</div>
+  <div class="user-options flex space-x-6">
+    <span class="cursor-pointer">User Profile</span>
+    <span class="cursor-pointer">Settings</span>
+    <span class="cursor-pointer">Logout</span>
   </div>
 </div>
 
-<div class="tiles-container">
-  <div class="tile">
-    <h3>Navigation</h3>
-    <button>Room Selection</button>
-    <button>Define Custom Area</button>
-    <div>
-      <p>Manual Directional Control:</p>
-      <button><FontAwesomeIcon icon={faArrowUp} /></button>
-      <div>
-        <button><FontAwesomeIcon icon={faArrowLeft} /></button>
-        <button><FontAwesomeIcon icon={faArrowRight} /></button>
+<div class="tiles-container grid grid-cols-3 gap-6 p-6 w-full h-full">
+  <div class="tile bg-gray-100 p-6 rounded-lg shadow-md">
+    <h3 class="text-xl font-semibold mb-4">Navigation</h3>
+    <button class="bg-blue-600 text-white py-2 px-4 rounded mb-2">Room Selection</button>
+    <button class="bg-blue-600 text-white py-2 px-4 rounded mb-4">Define Custom Area</button>
+    <div class="mb-4">
+      <p class="mb-2">Manual Directional Control:</p>
+      <div class="flex space-x-4 mb-2">
+        <button class="bg-blue-600 text-white py-2 px-4 rounded"><FontAwesomeIcon icon={faArrowUp} /></button>
       </div>
-      <button><FontAwesomeIcon icon={faArrowDown} /></button>
+      <div class="flex space-x-4 mb-2">
+        <button class="bg-blue-600 text-white py-2 px-4 rounded"><FontAwesomeIcon icon={faArrowLeft} /></button>
+        <button class="bg-blue-600 text-white py-2 px-4 rounded"><FontAwesomeIcon icon={faArrowRight} /></button>
+      </div>
+      <div class="flex space-x-4">
+        <button class="bg-blue-600 text-white py-2 px-4 rounded"><FontAwesomeIcon icon={faArrowDown} /></button>
+      </div>
     </div>
-    <button on:click={() => mopStatus = 'Returning to Dock'}>Return to Charging Dock</button>
+    <button class="bg-blue-600 text-white py-2 px-4 rounded" on:click={() => mopStatus = 'Returning to Dock'}>Return to Charging Dock</button>
   </div>
-  <div class="tile cleaning-controls">
-    <img src="./public/SmartMop.png" alt="Smart Mop Image">
-    <h3>Cleaning Controls</h3>
-    <button on:click={() => mopStatus = 'Cleaning'}>Start Cleaning</button>
-    <button on:click={() => mopStatus = 'Paused'}>Pause Cleaning</button>
-    <button on:click={() => mopStatus = 'Idle'}>Stop Cleaning</button>
-    <p>Select Cleaning Mode:</p>
-    <select bind:value={cleaningMode}>
+  <div class="tile cleaning-controls bg-gray-100 p-6 rounded-lg shadow-md col-span-1 row-span-2 flex flex-col items-center">
+    <img src="/path/to/smart-mop-image.jpg" alt="Smart Mop Image" class="w-full max-w-xs mb-6">
+    <h3 class="text-xl font-semibold mb-4">Cleaning Controls</h3>
+    <button class="bg-blue-600 text-white py-2 px-4 rounded mb-2" on:click={() => mopStatus = 'Cleaning'}>Start Cleaning</button>
+    <button class="bg-blue-600 text-white py-2 px-4 rounded mb-2" on:click={() => mopStatus = 'Paused'}>Pause Cleaning</button>
+    <button class="bg-blue-600 text-white py-2 px-4 rounded mb-4" on:click={() => mopStatus = 'Idle'}>Stop Cleaning</button>
+    <p class="mb-2">Select Cleaning Mode:</p>
+    <select bind:value={cleaningMode} class="border rounded p-2 mb-4">
       <option value="Quick">Quick</option>
       <option value="Deep">Deep</option>
       <option value="Spot">Spot</option>
     </select>
-    <p>Adjust Water Flow Rate:</p>
-    <input type="range" min="1" max="5" step="1">
-    <p>Set Cleaning Solution Concentration:</p>
-    <input type="range" min="1" max="5" step="1">
-    <p>Control Mop Head Rotation Speed:</p>
-    <input type="range" min="1" max="5" step="1">
+    <p class="mb-2">Adjust Water Flow Rate:</p>
+    <input type="range" min="1" max="5" step="1" class="mb-4 w-full">
+    <p class="mb-2">Set Cleaning Solution Concentration:</p>
+    <input type="range" min="1" max="5" step="1" class="mb-4 w-full">
+    <p class="mb-2">Control Mop Head Rotation Speed:</p>
+    <input type="range" min="1" max="5" step="1" class="mb-4 w-full">
   </div>
-  <div class="tile">
-    <h3>Scheduling</h3>
-    <button>Set Recurring Schedule</button>
-    <button>One-Time Scheduled Cleaning</button>
-    <p>Upcoming Scheduled Cleans:</p>
-    <ul>
+  <div class="tile bg-gray-100 p-6 rounded-lg shadow-md">
+    <h3 class="text-xl font-semibold mb-4">Scheduling</h3>
+    <button class="bg-blue-600 text-white py-2 px-4 rounded mb-2">Set Recurring Schedule</button>
+    <button class="bg-blue-600 text-white py-2 px-4 rounded mb-4">One-Time Scheduled Cleaning</button>
+    <p class="mb-4">Upcoming Scheduled Cleans:</p>
+    <ul class="list-disc list-inside">
       <li>Tomorrow at 10 AM</li>
       <li>Friday at 2 PM</li>
     </ul>
   </div>
-  <div class="tile">
-    <h3>Status and Monitoring</h3>
-    <p><FontAwesomeIcon icon={faBatteryFull} /> Battery Level: {batteryLevel}%</p>
-    <p><FontAwesomeIcon icon={faWater} /> Water Tank Level: {waterTankLevel}</p>
-    <p>Cleaning Solution Level: {cleaningSolutionLevel}</p>
-    <p>Cleaning Progress: 50%</p>
+  <div class="tile bg-gray-100 p-6 rounded-lg shadow-md">
+    <h3 class="text-xl font-semibold mb-4">Status and Monitoring</h3>
+    <p class="mb-2"><FontAwesomeIcon icon={faBatteryFull} /> Battery Level: {batteryLevel}%</p>
+    <p class="mb-2"><FontAwesomeIcon icon={faWater} /> Water Tank Level: {waterTankLevel}</p>
+    <p class="mb-2">Cleaning Solution Level: {cleaningSolutionLevel}</p>
+    <p class="mb-2">Cleaning Progress: 50%</p>
     <p>Estimated Time to Completion: 30 mins</p>
   </div>
-  <div class="tile">
-    <h3>Maintenance</h3>
-    <p>Filter Replacement Reminder</p>
-    <p>Mop Pad Replacement Alert</p>
-    <button on:click={() => simulateAlert('Filter Replacement Needed')}>Simulate Filter Replacement Alert</button>
-    <button on:click={() => simulateAlert('Mop Pad Replacement Needed')}>Simulate Mop Pad Replacement Alert</button>
-    <button>Self-Diagnosis Report</button>
-    <button>Cleaning History Log</button>
+  <div class="tile bg-gray-100 p-6 rounded-lg shadow-md">
+    <h3 class="text-xl font-semibold mb-4">Maintenance</h3>
+    <p class="mb-2">Filter Replacement Reminder</p>
+    <p class="mb-2">Mop Pad Replacement Alert</p>
+    <button class="bg-blue-600 text-white py-2 px-4 rounded mb-2" on:click={() => simulateAlert('Filter Replacement Needed')}>Simulate Filter Replacement Alert</button>
+    <button class="bg-blue-600 text-white py-2 px-4 rounded mb-4" on:click={() => simulateAlert('Mop Pad Replacement Needed')}>Simulate Mop Pad Replacement Alert</button>
+    <button class="bg-blue-600 text-white py-2 px-4 rounded mb-2">Self-Diagnosis Report</button>
+    <button class="bg-blue-600 text-white py-2 px-4 rounded">Cleaning History Log</button>
   </div>
-  <div class="tile">
-    <h3>Performance Analytics</h3>
-    <p>Area Cleaned: 200 sq ft</p>
-    <p>Energy Consumption: 50 Wh</p>
-    <p>Water Usage: 10 L</p>
+  <div class="tile bg-gray-100 p-6 rounded-lg shadow-md">
+    <h3 class="text-xl font-semibold mb-4">Performance Analytics</h3>
+    <p class="mb-2">Area Cleaned: 200 sq ft</p>
+    <p class="mb-2">Energy Consumption: 50 Wh</p>
+    <p class="mb-2">Water Usage: 10 L</p>
     <p>Cleaning Efficiency: 90%</p>
   </div>
 </div>
