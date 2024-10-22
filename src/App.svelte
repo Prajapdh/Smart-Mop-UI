@@ -92,7 +92,7 @@
     const interval = setInterval(() => {
       toggleMonitoringStatus();
       cycleRooms();
-    }, 1000);
+    }, 10000);
 
     return () => clearInterval(interval);
   });
@@ -194,27 +194,32 @@
     </div>
   
     <!-- Status and Monitoring Tile -->
-    <div class="tile bg-gray-100 p-6 rounded-lg shadow-md">
-      <h3 class="text-xl font-semibold mb-4">Status and Monitoring</h3>
-      <p class="mb-2"><strong>Battery Level: {batteryLevel}%</strong></p>
-      <div class="progress-bar">
-        <div class="progress" style="width: {batteryLevel}%"></div>
+    <div class="tile bg-white dark:bg-secondary-light p-6 rounded-lg shadow-md">
+      <h3 class="text-xl font-semibold mb-4 font-heading text-gray-800 dark:text-gray-200">Status and Monitoring</h3>
+      
+      <p class="mb-2 text-gray-700 dark:text-gray-300"><strong>Battery Level: {batteryLevel}%</strong></p>
+      <div class="bg-gray-200 dark:bg-gray-700 rounded-full h-4 mb-4">
+        <div class="bg-green-500 h-4 rounded-full" style="width: {batteryLevel}%"></div>
       </div>
-      <p class="mb-2"><strong>Water Tank Level: {waterTankLevelPercentage}%</strong></p>
-      <div class="progress-bar">
-        <div class="progress" style="width: {waterTankLevelPercentage}%"></div>
+      
+      <p class="mb-2 text-gray-700 dark:text-gray-300"><strong>Water Tank Level: {waterTankLevelPercentage}%</strong></p>
+      <div class="bg-gray-200 dark:bg-gray-700 rounded-full h-4 mb-4">
+        <div class="bg-blue-500 h-4 rounded-full" style="width: {waterTankLevelPercentage}%"></div>
       </div>
-      <p class="mb-2"><strong>Cleaning Solution Level: {cleaningSolutionLevelPercentage}%</strong></p>
-      <div class="progress-bar">
-        <div class="progress" style="width: {cleaningSolutionLevelPercentage}%"></div>
+      
+      <p class="mb-2 text-gray-700 dark:text-gray-300"><strong>Cleaning Solution Level: {cleaningSolutionLevelPercentage}%</strong></p>
+      <div class="bg-gray-200 dark:bg-gray-700 rounded-full h-4 mb-4">
+        <div class="bg-purple-500 h-4 rounded-full" style="width: {cleaningSolutionLevelPercentage}%"></div>
       </div>
-      <p class="mb-2"><strong>Cleaning Progress: {cleaningProgress}%</strong></p>
-      <div class="progress-bar">
-        <div class="progress" style="width: {cleaningProgress}%"></div>
+      
+      <p class="mb-2 text-gray-700 dark:text-gray-300"><strong>Cleaning Progress: {cleaningProgress}%</strong></p>
+      <div class="bg-gray-200 dark:bg-gray-700 rounded-full h-4 mb-4">
+        <div class="bg-yellow-500 h-4 rounded-full" style="width: {cleaningProgress}%"></div>
       </div>
-      <p class="mt-4"><strong>Estimated Time to Completion: {estimatedTime} mins</strong></p>
-      <div class="progress-bar">
-        <div class="progress" style="width: {100 - (estimatedTime / 30) * 100}%"></div>
+      
+      <p class="mt-4 mb-2 text-gray-700 dark:text-gray-300"><strong>Estimated Time to Completion: {estimatedTime} mins</strong></p>
+      <div class="bg-gray-200 dark:bg-gray-700 rounded-full h-4">
+        <div class="bg-red-500 h-4 rounded-full" style="width: {100 - (estimatedTime / 30) * 100}%"></div>
       </div>
     </div>
 
