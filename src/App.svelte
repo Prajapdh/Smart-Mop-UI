@@ -1,10 +1,11 @@
 <script>
-  import { faPlay, faBatteryFull, faWater, faSync, faMapMarkerAlt, faTachometerAlt, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+  import { faPlay, faPause, faStop, faBatteryFull, faWater, faSync, faMapMarkerAlt, faTachometerAlt, faExclamationCircle, faArrowUp, faArrowDown, faArrowLeft, faArrowRight, faHome } from '@fortawesome/free-solid-svg-icons';
   import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 
   let mopStatus = 'Idle';
   let batteryLevel = 100;
   let waterTankLevel = 'Full';
+  let cleaningSolutionLevel = 'Full';
   let currentLocation = 'Living Room';
   let cleaningSpeed = 'Medium';
   let cleaningMode = 'Normal';
@@ -14,136 +15,164 @@
     mopStatus = mopStatus === 'Idle' ? 'Cleaning' : 'Idle';
   }
 
-  function simulateAlert(alertType) {
-    if (!alerts.includes(alertType)) alerts.push(alertType);
-  }
-
-  function dismissAlert(alertType) {
-    alerts = alerts.filter(alert => alert !== alertType);
+  function simulateAlert(alert) {
+    alerts = [...alerts, alert];
   }
 </script>
 
-<div class="flex h-screen bg-gray-100">
-  <!-- Sidebar -->
-  <aside class="bg-gray-800 w-64 flex flex-col text-white p-4 space-y-4">
-    <button class="sidebar-button">
-      <FontAwesomeIcon icon={faPlay} class="mr-2"/> On/Off
-    </button>
-    <button class="sidebar-button">
-      <FontAwesomeIcon icon={faSync} class="mr-2"/> Cleaning Mode
-    </button>
-    <button class="sidebar-button">
-      <FontAwesomeIcon icon={faWater} class="mr-2"/> Water Spray
-    </button>
-    <button class="sidebar-button">
-      <FontAwesomeIcon icon={faBatteryFull} class="mr-2"/> Battery Level
-    </button>
-    <button class="sidebar-button">
-      <FontAwesomeIcon icon={faSync} class="mr-2"/> Auto Mode
-    </button>
-    <button class="sidebar-button">
-      <FontAwesomeIcon icon={faSync} class="mr-2"/> Cleaning Schedule
-    </button>
-    <button class="sidebar-button">
-      <FontAwesomeIcon icon={faSync} class="mr-2"/> Rotation Control
-    </button>
-    <button class="sidebar-button">
-      <FontAwesomeIcon icon={faWater} class="mr-2"/> Water Refill Alert
-    </button>
-    <button class="sidebar-button">
-      <FontAwesomeIcon icon={faSync} class="mr-2"/> Simulation/Test
-    </button>
-    <button class="sidebar-button">
-      <FontAwesomeIcon icon={faSync} class="mr-2"/> History Logs
-    </button>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 
-    <div class="mt-auto flex flex-col items-center text-center">
-      <img src="profile-pic.png" alt="User Profile" class="w-16 h-16 rounded-full mb-2"/>
-      <p>John Smith</p>
-      <p class="text-sm text-gray-400">johnsmith@email.abc</p>
-      <button class="mt-4 w-full bg-gray-600 hover:bg-gray-500 py-2">Settings</button>
-      <button class="w-full bg-red-600 hover:bg-red-500 py-2 mt-2">Log out</button>
-    </div>
-  </aside>
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1e1e2f;
+    color: white;
+    padding: 15px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  }
 
-  <!-- Main Content -->
-  <main class="p-6 flex-grow grid grid-cols-1 md:grid-cols-2 gap-6">
-    
-    <!-- On/Off Control -->
-    <section class="bg-white p-6 rounded-lg shadow-md">
-      <h2 class="text-lg font-semibold mb-2">Mop Status</h2>
-      <div class="flex items-center">
-        <FontAwesomeIcon icon={faPlay} class="text-green-500 mr-2"/>
-        <span class="text-gray-700">Current Status: {mopStatus}</span>
-      </div>
-      <button class="mt-4 w-full py-2 bg-blue-500 text-white rounded-lg" on:click={toggleMopStatus}>
-        {mopStatus === 'Idle' ? 'Start Mop' : 'Stop Mop'}
-      </button>
-    </section>
+  .app-title {
+    font-size: 24px;
+    font-weight: bold;
+  }
 
-    <!-- Battery Percentage -->
-    <section class="bg-white p-6 rounded-lg shadow-md">
-      <h2 class="text-lg font-semibold mb-2">Battery</h2>
-      <div class="flex items-center">
-        <FontAwesomeIcon icon={faBatteryFull} class="text-green-500 mr-2"/>
-        <span class="text-gray-700">Battery Level: {batteryLevel}%</span>
-      </div>
-    </section>
+  .user-options {
+    display: flex;
+    align-items: center;
+  }
 
-    <!-- Scheduled Cleaning -->
-    <section class="bg-white p-6 rounded-lg shadow-md">
-      <h2 class="text-lg font-semibold mb-2">Scheduled Cleaning</h2>
-      <div>
-        <p class="text-gray-700">Current Location: {currentLocation}</p>
-        <p class="text-gray-700">Cleaning Speed: {cleaningSpeed}</p>
-        <p class="text-gray-700">Cleaning Mode: {cleaningMode}</p>
-      </div>
-    </section>
+  .user-options span {
+    margin-left: 20px;
+    cursor: pointer;
+    font-size: 16px;
+  }
 
-    <!-- Water Tank Level -->
-    <section class="bg-white p-6 rounded-lg shadow-md">
-      <h2 class="text-lg font-semibold mb-2">Water Tank</h2>
-      <div class="flex items-center">
-        <FontAwesomeIcon icon={faWater} class="text-blue-500 mr-2"/>
-        <span class="text-gray-700">Water Tank Level: {waterTankLevel}</span>
-      </div>
-    </section>
+  .tiles-container {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 20px;
+    padding: 20px;
+  }
 
-    <!-- Current Location -->
-    <section class="bg-white p-6 rounded-lg shadow-md">
-      <h2 class="text-lg font-semibold mb-2">Location</h2>
-      <div class="flex items-center">
-        <FontAwesomeIcon icon={faMapMarkerAlt} class="text-red-500 mr-2"/>
-        <span class="text-gray-700">Current Location: {currentLocation}</span>
-      </div>
-    </section>
+  .tile {
+    background-color: #f5f5f5;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  }
 
-    <!-- Alerts -->
-    <section class="bg-white p-6 rounded-lg shadow-md">
-      <h2 class="text-lg font-semibold mb-2">Alerts</h2>
-      {#if alerts.length > 0}
-        <ul class="space-y-2">
-          {#each alerts as alert}
-            <li class="flex justify-between items-center">
-              <span class="text-red-500"><FontAwesomeIcon icon={faExclamationCircle} class="mr-2"/> {alert}</span>
-              <button class="text-blue-500" on:click={() => dismissAlert(alert)}>Dismiss</button>
-            </li>
-          {/each}
-        </ul>
-      {:else}
-        <p class="text-gray-700">No alerts</p>
-      {/if}
-      <button class="mt-4 w-full py-2 bg-blue-500 text-white rounded-lg" on:click={() => simulateAlert('Refill Water Tank')}>
-        Simulate Alert: Refill Water Tank
-      </button>
-      <button class="mt-2 w-full py-2 bg-blue-500 text-white rounded-lg" on:click={() => simulateAlert('Replace Mop Pads')}>
-        Simulate Alert: Replace Mop Pads
-      </button>
-    </section>
+  .cleaning-controls {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
-  </main>
+  .cleaning-controls img {
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 20px;
+  }
+
+  .tile button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .tile button:hover {
+    background-color: #0056b3;
+  }
+</style>
+
+<div class="top-bar">
+  <div class="app-title">SmartMop</div>
+  <div class="user-options">
+    <span>User Profile</span>
+    <span>Settings</span>
+    <span>Logout</span>
+  </div>
 </div>
 
-<style>
-  /* Tailwind styles already applied via CDN or build */
-</style>
+<div class="tiles-container">
+  <div class="tile">
+    <h3>Navigation</h3>
+    <button>Room Selection</button>
+    <button>Define Custom Area</button>
+    <div>
+      <p>Manual Directional Control:</p>
+      <button><FontAwesomeIcon icon={faArrowUp} /></button>
+      <div>
+        <button><FontAwesomeIcon icon={faArrowLeft} /></button>
+        <button><FontAwesomeIcon icon={faArrowRight} /></button>
+      </div>
+      <button><FontAwesomeIcon icon={faArrowDown} /></button>
+    </div>
+    <button on:click={() => mopStatus = 'Returning to Dock'}>Return to Charging Dock</button>
+  </div>
+  <div class="tile cleaning-controls">
+    <img src="./public/SmartMop.png" alt="Smart Mop Image">
+    <h3>Cleaning Controls</h3>
+    <button on:click={() => mopStatus = 'Cleaning'}>Start Cleaning</button>
+    <button on:click={() => mopStatus = 'Paused'}>Pause Cleaning</button>
+    <button on:click={() => mopStatus = 'Idle'}>Stop Cleaning</button>
+    <p>Select Cleaning Mode:</p>
+    <select bind:value={cleaningMode}>
+      <option value="Quick">Quick</option>
+      <option value="Deep">Deep</option>
+      <option value="Spot">Spot</option>
+    </select>
+    <p>Adjust Water Flow Rate:</p>
+    <input type="range" min="1" max="5" step="1">
+    <p>Set Cleaning Solution Concentration:</p>
+    <input type="range" min="1" max="5" step="1">
+    <p>Control Mop Head Rotation Speed:</p>
+    <input type="range" min="1" max="5" step="1">
+  </div>
+  <div class="tile">
+    <h3>Scheduling</h3>
+    <button>Set Recurring Schedule</button>
+    <button>One-Time Scheduled Cleaning</button>
+    <p>Upcoming Scheduled Cleans:</p>
+    <ul>
+      <li>Tomorrow at 10 AM</li>
+      <li>Friday at 2 PM</li>
+    </ul>
+  </div>
+  <div class="tile">
+    <h3>Status and Monitoring</h3>
+    <p><FontAwesomeIcon icon={faBatteryFull} /> Battery Level: {batteryLevel}%</p>
+    <p><FontAwesomeIcon icon={faWater} /> Water Tank Level: {waterTankLevel}</p>
+    <p>Cleaning Solution Level: {cleaningSolutionLevel}</p>
+    <p>Cleaning Progress: 50%</p>
+    <p>Estimated Time to Completion: 30 mins</p>
+  </div>
+  <div class="tile">
+    <h3>Maintenance</h3>
+    <p>Filter Replacement Reminder</p>
+    <p>Mop Pad Replacement Alert</p>
+    <button on:click={() => simulateAlert('Filter Replacement Needed')}>Simulate Filter Replacement Alert</button>
+    <button on:click={() => simulateAlert('Mop Pad Replacement Needed')}>Simulate Mop Pad Replacement Alert</button>
+    <button>Self-Diagnosis Report</button>
+    <button>Cleaning History Log</button>
+  </div>
+  <div class="tile">
+    <h3>Performance Analytics</h3>
+    <p>Area Cleaned: 200 sq ft</p>
+    <p>Energy Consumption: 50 Wh</p>
+    <p>Water Usage: 10 L</p>
+    <p>Cleaning Efficiency: 90%</p>
+  </div>
+</div>
