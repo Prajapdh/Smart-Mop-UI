@@ -129,12 +129,16 @@ button:focus-visible {
 /* Light mode settings */
 @media (prefers-color-scheme: light) {
   :root {
+    font-family: 'Inter', sans-serif;
     --text-color: rgba(12, 12, 12, 0.87);
     --background-color: #ffffff;
     --toastContainerTop: auto;
     --toastContainerRight: auto;
     --toastContainerBottom: 8rem;
     --toastContainerLeft: calc(50vw - 8rem);
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
   }
 
   body {

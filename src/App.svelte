@@ -208,9 +208,9 @@
     <button on:click={toggleTheme} class="text-white hover:text-accent">
       <FontAwesomeIcon icon={isDarkMode ? faSun : faMoon} />
     </button>
-    <span class="cursor-pointer" on:click={toggleUserProfile}>{userName}'s Profile</span>
-    <span class="cursor-pointer" on:click={toggleDeviceInfo}>Device Information</span>
-    <span class="cursor-pointer" on:click={toggleSupportInfo}>Support</span>
+    <button class="cursor-pointer bg-transparent border-none text-inherit" on:click={toggleUserProfile}>{userName}'s Profile</button>
+<button class="cursor-pointer bg-transparent border-none text-inherit" on:click={toggleDeviceInfo}>Device Information</button>
+<button class="cursor-pointer bg-transparent border-none text-inherit" on:click={toggleSupportInfo}>Support</button>
   </div>
 </div>
 
@@ -287,7 +287,7 @@
     
     <!-- main controls tile -->
     <div class="tile bg-white dark:bg-secondary-light p-6 rounded-lg shadow-md col-span-1 row-span-3 col-start-2 flex flex-col items-center">
-      <img src="../public/SmartMop.png" alt="Smart Mop Image" class="w-full mb-6 rounded-lg">
+      <img src="../public/SmartMop.png" alt="Smart Mop" class="w-full mb-6 rounded-lg">
       <h3 class="text-2xl font-semibold mb-6 font-heading text-gray-800 dark:text-gray-200">Cleaning Controls</h3>
       
       <div class="flex space-x-4 mb-6 w-full">
@@ -530,140 +530,4 @@
 
 <style global>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap');
-
-  :root {
-    font-family: 'Inter', sans-serif;
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Poppins', sans-serif;
-  }
-
-  /* Dhruv's styles */
-  .info-button {
-    color: white;
-    cursor: pointer;
-  }
-  .support-button {
-    color: white;
-    cursor: pointer;
-  }
-  .info-modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-    width: 500px;
-    z-index: 10;
-  }
-  .support-modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
-    width: 500px;
-    z-index: 10;
-  }
-  .overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 5;
-  }
-  .close-button,
-  .close-button-support {
-    margin-top: 20px;
-    background-color: #4B5563;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-  }
-  .progress-bar {
-    width: 100%;
-    background-color: #e0e0e0;
-    border-radius: 5px;
-    overflow: hidden;
-    height: 20px;
-    margin-top: 10px;
-  }
-  .progress {
-    height: 100%;
-    background-color: #4caf50;
-    transition: width 0.5s ease;
-  }
-  .status-indicator {
-    display: inline-block;
-    padding: 0.2rem 0.5rem;
-    border-radius: 0.25rem;
-    background-color: #f59e0b;
-    color: white;
-    font-weight: bold;
-  }
-  .control-button {
-    padding: 12px 20px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    margin: 5px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  .start-button {
-    background-color: #22c55e;
-    color: white;
-  }
-  .pause-button {
-    background-color: #fbbf24;
-    color: black;
-  }
-  .stop-button {
-    background-color: #ef4444;
-    color: white;
-  }
-  .control-button:hover {
-    opacity: 0.9;
-  }
-  .direction-button {
-    background-color: #e5e7eb;
-    padding: 20px;
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  .direction-button:hover {
-    background-color: #d1d5db;
-  }
-  .mode-button {
-    background-color: #f3f4f6;
-    color: #111827;
-    padding: 12px 24px;
-    border-radius: 8px;
-    border: 1px solid #d1d5db;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  .mode-button:hover {
-    background-color: #e5e7eb;
-  }
-/* Dhruv styles end */
 </style>
