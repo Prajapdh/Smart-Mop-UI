@@ -10,6 +10,7 @@
   import Bed2FloorPlan from '../public/Bed2FloorPlan.png';
   import LivingFloorPlan from '../public/LivingFloorPlan.png';
   import KitchenFloorPlan from '../public/KitchenFloorPlan.png';
+  import SmartMop from '../public/SmartMop.png';
 
   let mopStatus = 'Idle';
   let batteryLevel = Math.floor(Math.random() * 51) + 50;
@@ -293,7 +294,7 @@
     
     <!-- main controls tile -->
     <div class="tile bg-white dark:bg-secondary-light p-6 rounded-lg shadow-md col-span-1 row-span-3 col-start-2 flex flex-col items-center">
-      <img src="../public/SmartMop.png" alt="Smart Mop" class="w-full mb-6 rounded-lg">
+      <img src={SmartMop} alt="Smart Mop" class="w-full mb-6 rounded-lg">
       <h3 class="text-2xl font-semibold mb-6 font-heading text-gray-800 dark:text-gray-200">Cleaning Controls</h3>
       
       <div class="flex space-x-4 mb-6 w-full">
