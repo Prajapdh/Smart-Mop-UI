@@ -1,7 +1,9 @@
 <script>
   import { onMount } from 'svelte';
-  import { faPlay, faBolt, faChartLine, faPause, faStop, faBatteryFull, faWater, faSync, faMapMarkerAlt, faTachometerAlt, faExclamationCircle, faHome, faSun, faMoon,faRobot, faRedo } from '@fortawesome/free-solid-svg-icons';
+  import { faFilter, faBroom, faClipboardCheck, faHistory, faExclamationTriangle, faCalendar, faTimes, faPlay, faBolt, faChartLine, faPause, faStop, faBatteryFull, faWater, faSync, faMapMarkerAlt, faTachometerAlt, faExclamationCircle, faHome, faSun, faMoon,faRobot, faRedo } from '@fortawesome/free-solid-svg-icons';
   import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
+  import { SvelteToast } from '@zerodevx/svelte-toast';
+  import { toast } from '@zerodevx/svelte-toast'
 
   let mopStatus = 'Idle';
   let batteryLevel = Math.floor(Math.random() * 51) + 50;
@@ -27,7 +29,83 @@
   ];
   let currentFloorPlanIndex = 0;
   let showUserProfile = false;
-  let userName = "John Doe"; // Default name, you can load this from storage or API
+  let userName = "John Doe";
+  let schedules = [];
+  let newScheduleTime = '';
+  let showScheduleForm = false;
+  let selectedDays = {
+    Monday: false,
+    Tuesday: false,
+    Wednesday: false,
+    Thursday: false,
+    Friday: false,
+    Saturday: false,
+    Sunday: false
+  };
+  let filterHealth = 75; // Percentage
+  let mopPadHealth = 60; // Percentage
+
+  function simulateAlert(message) {
+    console.log('Simulating alert:', message); // Add this line for debugging
+    toast.push(message, {
+      theme: {
+        '--toastBackground': '#F59E0B',
+        '--toastColor': 'white',
+        '--toastBarBackground': '#D97706'
+      }
+    });
+  }
+
+  function generateReport() {
+    // Simulate report generation
+    toast.push('Self-Diagnosis Report Generated', {
+      theme: {
+        '--toastBackground': '#10B981',
+        '--toastColor': 'white',
+        '--toastBarBackground': '#059669'
+      }
+    });
+  }
+
+  function viewCleaningHistory() {
+    // Simulate opening cleaning history
+    toast.push('Cleaning History Opened', {
+      theme: {
+        '--toastBackground': '#3B82F6',
+        '--toastColor': 'white',
+        '--toastBarBackground': '#2563EB'
+      }
+    });
+  }
+  
+  function toggleScheduleForm() {
+    showScheduleForm = !showScheduleForm;
+  }
+
+  function addSchedule() {
+    if (newScheduleTime && Object.values(selectedDays).some(day => day)) {
+      const newSchedule = {
+        time: newScheduleTime,
+        days: Object.keys(selectedDays).filter(day => selectedDays[day])
+      };
+      schedules = [...schedules, newSchedule].sort((a, b) => a.time.localeCompare(b.time));
+      newScheduleTime = '';
+      resetSelectedDays();
+      showScheduleForm = false;
+    }
+  }
+
+  function removeSchedule(index) {
+    schedules = schedules.filter((_, i) => i !== index);
+  }
+
+  function resetSelectedDays() {
+    Object.keys(selectedDays).forEach(day => selectedDays[day] = false);
+  }
+
+  function formatSchedule(schedule) {
+    return `${schedule.time} (${schedule.days.join(', ')})`;
+  }
 
   function toggleUserProfile() {
     showUserProfile = !showUserProfile;
@@ -72,10 +150,6 @@
         cleaningSolutionLevelPercentage = 100;
       }
     }
-  }
-
-  function simulateAlert(alert) {
-    alerts = [...alerts, alert];
   }
 
   function toggleTheme() {
@@ -124,7 +198,7 @@
   });
 </script>
 
-
+<SvelteToast />
 
 <div id="wrapper" class="p-0 m-0 pb-10 w-screen h-screen overflow-x-hidden bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark font-sans">
   <!-- Navigation Bar -->
@@ -285,15 +359,52 @@
     <!-- Scheduling Tile -->
     <div class="tile bg-white dark:bg-secondary-light p-6 rounded-lg shadow-md row-span-2 col-start-3">
       <h3 class="text-xl font-semibold mb-4 font-heading">Scheduling</h3>
-      <button class="bg-primary text-white py-2 px-4 rounded mb-2 hover:bg-primary-dark">Set Recurring Schedule</button>
-      <button class="bg-primary text-white py-2 px-4 rounded mb-4 hover:bg-primary-dark">One-Time Scheduled Cleaning</button>
-      <p class="mb-4">Upcoming Scheduled Cleans:</p>
-      <ul class="list-disc list-inside">
-        <li>Tomorrow at 10 AM</li>
-        <li>Friday at 2 PM</li>
-      </ul>
+      
+      {#if !showScheduleForm}
+        <button class="bg-primary text-white py-2 px-4 rounded mb-4 hover:bg-primary-dark w-full" on:click={toggleScheduleForm}>
+          Set New Schedule
+        </button>
+      {:else}
+        <div class="mb-4">
+          <input
+            type="time"
+            bind:value={newScheduleTime}
+            class="w-full p-2 mb-2 border rounded dark:bg-gray-700 dark:text-white"
+          />
+          <div class="grid grid-cols-4 gap-2 mb-2">
+            {#each Object.keys(selectedDays) as day}
+              <label class="flex items-center space-x-2">
+                <input type="checkbox" bind:checked={selectedDays[day]} class="form-checkbox">
+                <span class="text-sm">{day.slice(0, 3)}</span>
+              </label>
+            {/each}
+          </div>
+          <button class="bg-primary text-white py-2 px-4 rounded hover:bg-primary-dark w-full" on:click={addSchedule}>
+            Add Schedule
+          </button>
+        </div>
+      {/if}
+    
+      <h4 class="font-semibold mb-2">Current Schedules:</h4>
+      {#if schedules.length === 0}
+        <p class="text-gray-600 dark:text-gray-400">No schedules set</p>
+      {:else}
+        <ul class="space-y-2">
+          {#each schedules as schedule, index}
+            <li class="flex justify-between items-center">
+              <span class="flex items-center">
+                <FontAwesomeIcon icon={faCalendar} class="mr-2 text-primary" />
+                {formatSchedule(schedule)}
+              </span>
+              <button class="text-red-500 hover:text-red-700" on:click={() => removeSchedule(index)}>
+                <FontAwesomeIcon icon={faTimes} />
+              </button>
+            </li>
+          {/each}
+        </ul>
+      {/if}
     </div>
-  
+
     <!-- Status and Monitoring Tile -->
     <div class="tile bg-white dark:bg-secondary-light p-6 rounded-lg shadow-md row-start-3 row-span-2 col-start-1">
       <h3 class="text-xl font-semibold mb-4 font-heading text-gray-800 dark:text-gray-200">Status and Monitoring</h3>
@@ -326,13 +437,61 @@
 
     <!-- Maintenance Tile -->
     <div class="tile bg-white dark:bg-secondary-light p-6 rounded-lg shadow-md row-start-3 row-span-2 col-start-3">
-      <h3 class="text-xl font-semibold mb-4 font-heading">Maintenance</h3>
-      <p class="mb-2">Filter Replacement Reminder</p>
-      <p class="mb-2">Mop Pad Replacement Alert</p>
-      <button class="bg-primary text-white py-2 px-4 rounded mb-2 hover:bg-primary-dark" on:click={() => simulateAlert('Filter Replacement Needed')}>Simulate Filter Replacement Alert</button>
-      <button class="bg-primary text-white py-2 px-4 rounded mb-4 hover:bg-primary-dark" on:click={() => simulateAlert('Mop Pad Replacement Needed')}>Simulate Mop Pad Replacement Alert</button>
-      <button class="bg-primary text-white py-2 px-4 rounded mb-2 hover:bg-primary-dark">Self-Diagnosis Report</button>
-      <button class="bg-primary text-white py-2 px-4 rounded hover:bg-primary-dark">Cleaning History Log</button>
+      <h3 class="text-xl font-semibold mb-6 font-heading">Maintenance</h3>
+      
+      <div class="space-y-6">
+        <div>
+          <h4 class="text-lg font-medium mb-2 flex items-center">
+            <FontAwesomeIcon icon={faFilter} class="mr-2 text-blue-500" />
+            Filter Status
+          </h4>
+          <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+            <div class="bg-blue-600 h-2.5 rounded-full" style="width: {filterHealth}%"></div>
+          </div>
+          <p class="text-sm mt-1 text-gray-600 dark:text-gray-400">Filter health: {filterHealth}%</p>
+          <button 
+            class="mt-2 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-300 flex items-center justify-center"
+            on:click={() => simulateAlert('Filter Replacement Needed')}
+          >
+            <FontAwesomeIcon icon={faExclamationTriangle} class="mr-2" />
+            Simulate Filter Alert
+          </button>
+        </div>
+    
+        <div>
+          <h4 class="text-lg font-medium mb-2 flex items-center">
+            <FontAwesomeIcon icon={faBroom} class="mr-2 text-green-500" />
+            Mop Pad Status
+          </h4>
+          <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+            <div class="bg-green-600 h-2.5 rounded-full" style="width: {mopPadHealth}%"></div>
+          </div>
+          <p class="text-sm mt-1 text-gray-600 dark:text-gray-400">Mop pad health: {mopPadHealth}%</p>
+          <button 
+            class="mt-2 bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition duration-300 flex items-center justify-center"
+            on:click={() => simulateAlert('Mop Pad Replacement Needed')}
+          >
+            <FontAwesomeIcon icon={faExclamationTriangle} class="mr-2" />
+            Simulate Mop Pad Alert
+          </button>
+        </div>
+    
+        <button 
+          class="w-full bg-purple-500 text-white py-2 px-4 rounded hover:bg-purple-600 transition duration-300 flex items-center justify-center"
+          on:click={generateReport}
+        >
+          <FontAwesomeIcon icon={faClipboardCheck} class="mr-2" />
+          Generate Self-Diagnosis Report
+        </button>
+    
+        <button 
+          class="w-full bg-indigo-500 text-white py-2 px-4 rounded hover:bg-indigo-600 transition duration-300 flex items-center justify-center"
+          on:click={viewCleaningHistory}
+        >
+          <FontAwesomeIcon icon={faHistory} class="mr-2" />
+          View Cleaning History Log
+        </button>
+      </div>
     </div>
     
     <!-- Performance Analytics Tile -->

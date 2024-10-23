@@ -131,6 +131,10 @@ button:focus-visible {
   :root {
     --text-color: rgba(12, 12, 12, 0.87);
     --background-color: #ffffff;
+    --toastContainerTop: auto;
+    --toastContainerRight: auto;
+    --toastContainerBottom: 8rem;
+    --toastContainerLeft: calc(50vw - 8rem);
   }
 
   body {
