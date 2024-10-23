@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { faPlay, faPause, faStop, faBatteryFull, faWater, faSync, faMapMarkerAlt, faTachometerAlt, faExclamationCircle, faHome, faSun, faMoon,faRobot, faRedo } from '@fortawesome/free-solid-svg-icons';
+  import { faPlay, faBolt, faChartLine, faPause, faStop, faBatteryFull, faWater, faSync, faMapMarkerAlt, faTachometerAlt, faExclamationCircle, faHome, faSun, faMoon,faRobot, faRedo } from '@fortawesome/free-solid-svg-icons';
   import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
 
   let mopStatus = 'Idle';
@@ -26,25 +26,51 @@
     { name: 'In Kitchen', url: '../public/KitchenFloorPlan.png' },
   ];
   let currentFloorPlanIndex = 0;
+  let showUserProfile = false;
+  let userName = "John Doe"; // Default name, you can load this from storage or API
 
-  function toggleMopStatus() {
-      mopStatus = mopStatus === 'Idle' ? 'Cleaning' : 'Idle';
+  function toggleUserProfile() {
+    showUserProfile = !showUserProfile;
+  }
+
+  function saveUserName() {
+    alert(`Name saved: ${userName}`);
+    toggleUserProfile();
+  }
+
+  function toggleMopStatus(status) {
+    if (status === 'Idle') {
+      mopStatus = 'Idle';
+    } else if (status === 'Cleaning') {
+      mopStatus = 'Cleaning';
+    } else if (status === 'Paused') {
+      mopStatus = 'Paused';
     }
+    console.log('Mop Status:', mopStatus);
+  }
 
   function toggleMonitoringStatus() {
     if (mopStatus === 'Cleaning' && batteryLevel > 0) {
-          cleaningProgress = Math.min(cleaningProgress + 1, 100);
-          batteryLevel = Math.max(batteryLevel - 1, 0);
-          estimatedTime = Math.max(estimatedTime - 1, 0);
-          waterTankLevelPercentage = Math.max(waterTankLevelPercentage - 0.5, 0);
-          cleaningSolutionLevelPercentage = Math.max(cleaningSolutionLevelPercentage - 0.3, 0);
-        }
-    else if(mopStatus === 'Idle'){
-      cleaningProgress = 0;
-          batteryLevel = 100;
-          estimatedTime = 2;
-          waterTankLevelPercentage = 100;
-          cleaningSolutionLevelPercentage = 100;
+      cleaningProgress = Math.min(cleaningProgress + 1, 100);
+      batteryLevel = Math.max(batteryLevel - 1, 0);
+      estimatedTime = Math.max(estimatedTime - 1, 0);
+      waterTankLevelPercentage = Math.max(waterTankLevelPercentage - 0.5, 0);
+      cleaningSolutionLevelPercentage = Math.max(cleaningSolutionLevelPercentage - 0.3, 0);
+    } else if (mopStatus === 'Idle' || mopStatus === 'Paused') {
+      // Do not change values when idle or paused
+    } else if (mopStatus === 'Returning to Dock') {
+      // Handle returning to dock state
+      currentRoomIndex = 0;
+      currentLocation = rooms[currentRoomIndex];
+      currentFloorPlanIndex = 0;
+      if (currentLocation === 'Dock') {
+        mopStatus = 'Idle';
+        cleaningProgress = 0;
+        batteryLevel = 100;
+        estimatedTime = 0;
+        waterTankLevelPercentage = 100;
+        cleaningSolutionLevelPercentage = 100;
+      }
     }
   }
 
@@ -101,56 +127,78 @@
 
 
 <div id="wrapper" class="p-0 m-0 pb-10 w-screen h-screen overflow-x-hidden bg-background-light dark:bg-background-dark text-text-light dark:text-text-dark font-sans">
-  <div class="top-bar sticky top-0 w-full bg-secondary text-white flex justify-between items-center p-4 shadow-lg">
-    <div class="app-title text-2xl font-bold font-heading">SmartMop</div>
-    <div class="user-options flex space-x-6 items-center">
-      <button on:click={toggleTheme} class="text-white hover:text-accent">
-        <FontAwesomeIcon icon={isDarkMode ? faSun : faMoon} />
-      </button>
-      <span class="cursor-pointer">User Profile</span>
-      <span class="cursor-pointer">Settings</span>
-      <span class="cursor-pointer">Logout</span>
-      <span class="info-button" on:click={toggleDeviceInfo}>Device Information</span>
-      <span class="support-button" on:click={toggleSupportInfo}>Support</span>
+  <!-- Navigation Bar -->
+<div class="top-bar sticky top-0 w-full bg-secondary text-white flex justify-between items-center p-4 shadow-lg">
+  <div class="app-title text-2xl font-bold font-heading">SmartMop</div>
+  <div class="user-options flex space-x-6 items-center">
+    <button on:click={toggleTheme} class="text-white hover:text-accent">
+      <FontAwesomeIcon icon={isDarkMode ? faSun : faMoon} />
+    </button>
+    <span class="cursor-pointer" on:click={toggleUserProfile}>{userName}'s Profile</span>
+    <span class="cursor-pointer" on:click={toggleDeviceInfo}>Device Information</span>
+    <span class="cursor-pointer" on:click={toggleSupportInfo}>Support</span>
+  </div>
+</div>
+
+<!-- Device Information Modal -->
+{#if showDeviceInfo}
+  <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-8 max-w-md w-full">
+      <h3 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Device Information</h3>
+      <div class="space-y-2 text-gray-700 dark:text-gray-300">
+        <p><strong>Device:</strong> SmartMop Intelligent Cleaner</p>
+        <p><strong>Model Number:</strong> AAXNN2342</p>
+        <p><strong>Battery Level:</strong> {batteryLevel}%</p>
+        <p><strong>Water Tank Level:</strong> {waterTankLevelPercentage}%</p>
+        <p><strong>Cleaning Solution Level:</strong> {cleaningSolutionLevelPercentage}%</p>
+        <p><strong>Current Location:</strong> {currentLocation}</p>
+      </div>
+      <button class="mt-6 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" on:click={toggleDeviceInfo}>Close</button>
     </div>
   </div>
-  
-  <!-- Device Information Modal -->
-  {#if showDeviceInfo}
-    <div class="overlay" on:click={toggleDeviceInfo}></div>
-    <div class="info-modal">
-      <h3>Device Information</h3>
-      <p><strong>Device:</strong> SmartMop Intelligent Cleaner</p>
-      <p><strong>Model Number:</strong> AAXNN2342</p>
-      <p><strong>Battery Level:</strong> {batteryLevel}%</p>
-      <p><strong>Water Tank Level:</strong> {waterTankLevelPercentage}%</p>
-      <p><strong>Cleaning Solution Level:</strong> {cleaningSolutionLevelPercentage}%</p>
-      <p><strong>Current Location:</strong> {currentLocation}</p>
-      <button class="close-button" on:click={toggleDeviceInfo}>Close</button>
+{/if}
+
+<!-- Support Information Modal -->
+{#if showSupportInfo}
+  <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-8 max-w-md w-full">
+      <h3 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Support Information</h3>
+      <div class="space-y-4 text-gray-700 dark:text-gray-300">
+        <p>If you need help or have any questions regarding the SmartMop, please refer to the user manual or contact our support team.</p>
+        <p><strong>Support Contact:</strong> support@smartmop.com</p>
+        <p><strong>Phone Number:</strong> +1-800-123-4567</p>
+        <p><strong>Operating Hours:</strong> Mon-Fri, 9 AM - 5 PM EST</p>
+      </div>
+      <button class="mt-6 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" on:click={toggleSupportInfo}>Close</button>
     </div>
-  {/if}
-  
-  <!-- Support Information Modal -->
-  {#if showSupportInfo}
-    <div class="overlay" on:click={toggleSupportInfo}></div>
-    <div class="support-modal">
-      <h3>Support Information</h3>
-      <p>If you need help or have any questions regarding the SmartMop, please refer to the user manual or contact our support team.</p>
-      <p><strong>Support Contact:</strong> support@smartmop.com</p>
-      <p><strong>Phone Number:</strong> +1-800-123-4567</p>
-      <p><strong>Operating Hours:</strong> Mon-Fri, 9 AM - 5 PM EST</p>
-      <button class="close-button-support" on:click={toggleSupportInfo}>Close</button>
+  </div>
+{/if}
+
+<!-- User Profile Modal -->
+{#if showUserProfile}
+  <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-8 max-w-md w-full">
+      <h3 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">User Profile</h3>
+      <div class="mb-4">
+        <label for="userName" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
+        <input type="text" id="userName" bind:value={userName} class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+      </div>
+      <div class="flex justify-end space-x-2">
+        <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded" on:click={toggleUserProfile}>Cancel</button>
+        <button class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" on:click={saveUserName}>Save</button>
+      </div>
     </div>
-  {/if}
+  </div>
+{/if}
 
   <!-- Tiles Container -->
-  <div class="tiles-container grid grid-cols-3 gap-6 p-6 w-full h-full">
+  <div class="tiles-container grid grid-cols-3 auto-rows-auto gap-6 p-6 w-full">
     <!-- Navigation Tile -->
-    <div class="tile bg-white dark:bg-secondary-light p-6 rounded-lg shadow-md">
+    <div class="tile bg-white dark:bg-secondary-light p-6 rounded-lg shadow-md row-span-2 col-start-1">
       <h3 class="text-xl font-semibold mb-4 font-heading">Navigation</h3>
       <p class="mb-4">Current Location: {currentLocation}</p>
       <button class="bg-primary text-white py-2 px-4 rounded mb-4 hover:bg-primary-dark w-full" on:click={returnToDock}>
-        Return to Charging Dock
+        {mopStatus != 'Returning to Dock' ? 'Return to Charging Dock' : 'At Dock'}
       </button>
       <div class="mb-4">
         <h4 class="font-semibold mb-2">Floor Plan</h4>
@@ -162,27 +210,80 @@
         <p class="mt-2 text-center">{floorPlans[currentFloorPlanIndex].name}</p>
       </div>
     </div>
-    <div class="tile bg-white dark:bg-secondary-light p-6 rounded-lg shadow-md col-span-1 row-span-2 flex flex-col items-center">
-      <img src="../public/SmartMop.png" alt="Smart Mop Image" class="w-full max-w-xs mb-6">
-      <h3 class="text-xl font-semibold mb-4 font-heading">Cleaning Controls</h3>
-      <button class="bg-primary text-white py-2 px-4 rounded mb-2 hover:bg-primary-dark" on:click={() => mopStatus = 'Cleaning'}>Start Cleaning</button>
-      <button class="bg-primary text-white py-2 px-4 rounded mb-2 hover:bg-primary-dark" on:click={() => mopStatus = 'Paused'}>Pause Cleaning</button>
-      <button class="bg-primary text-white py-2 px-4 rounded mb-4 hover:bg-primary-dark" on:click={() => mopStatus = 'Idle'}>Stop Cleaning</button>
-      <p class="mb-2">Select Cleaning Mode:</p>
-      <select bind:value={cleaningMode} class="border rounded p-2 mb-4 bg-white dark:bg-secondary-light text-text-light dark:text-text-dark">
-        <option value="Quick">Quick</option>
-        <option value="Deep">Deep</option>
-        <option value="Spot">Spot</option>
-      </select>
-      <p class="mb-2">Adjust Water Flow Rate:</p>
-      <input type="range" min="1" max="5" step="1" class="mb-4 w-full">
-      <p class="mb-2">Set Cleaning Solution Concentration:</p>
-      <input type="range" min="1" max="5" step="1" class="mb-4 w-full">
-      <p class="mb-2">Control Mop Head Rotation Speed:</p>
-      <input type="range" min="1" max="5" step="1" class="mb-4 w-full">
+    
+    <!-- main controls tile -->
+    <div class="tile bg-white dark:bg-secondary-light p-6 rounded-lg shadow-md col-span-1 row-span-3 col-start-2 flex flex-col items-center">
+      <img src="../public/SmartMop.png" alt="Smart Mop Image" class="w-full mb-6 rounded-lg">
+      <h3 class="text-2xl font-semibold mb-6 font-heading text-gray-800 dark:text-gray-200">Cleaning Controls</h3>
+      
+      <div class="flex space-x-4 mb-6 w-full">
+        <button 
+          class="flex-1 {mopStatus === 'Cleaning' ? 'bg-green-500 hover:bg-green-600' : 'bg-green-300 hover:bg-green-400'} dark:text-white text-gray-900 py-3 px-4 rounded-lg font-semibold transition duration-300 flex items-center justify-center" 
+          on:click={() => toggleMopStatus('Cleaning')}
+        >
+          <FontAwesomeIcon icon={faPlay} class="mr-2 dark:text-white text-gray-700" />
+          {mopStatus != 'Cleaning' ? 'Start' : 'Cleaning'}
+        </button>
+        
+        <button 
+          class="flex-1 {mopStatus === 'Paused' ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-yellow-300 hover:bg-yellow-400'} dark:text-white text-gray-900 py-3 px-4 rounded-lg font-semibold transition duration-300 flex items-center justify-center" 
+          on:click={() => toggleMopStatus('Paused')}
+        >
+          <FontAwesomeIcon icon={faPause} class="mr-2 dark:text-white text-gray-700" />
+          Pause
+        </button>
+        
+        <button 
+          class="flex-1 {mopStatus === 'Idle' ? 'bg-red-500 hover:bg-red-600' : 'bg-red-300 hover:bg-red-400'} dark:text-white text-gray-900 y-3 px-4 rounded-lg font-semibold transition duration-300 flex items-center justify-center" 
+          on:click={() => toggleMopStatus('Idle')}
+        >
+          <FontAwesomeIcon icon={faStop} class="mr-2 dark:text-white text-gray-700" />
+          Stop
+        </button>
+      </div>
+      
+      <div class="w-full mb-6">
+        <label for="cleaningMode" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cleaning Mode:</label>
+        <select id="cleaningMode" bind:value={cleaningMode} class="w-full border rounded-lg p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+          <option value="Quick">Quick Clean</option>
+          <option value="Deep">Deep Clean</option>
+          <option value="Spot">Spot Clean</option>
+        </select>
+      </div>
+      
+      <div class="w-full mb-6">
+        <label for="waterFlow" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Water Flow Rate:</label>
+        <input id="waterFlow" type="range" min="1" max="5" step="1" class="w-full">
+        <div class="flex justify-between text-xs text-gray-600 dark:text-gray-400 mt-1 w-[80%] mx-auto">
+          <span>Low</span>
+          <span>Medium</span>
+          <span>High</span>
+        </div>
+      </div>
+      
+      <div class="w-full mb-6">
+        <label for="solutionConc" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cleaning Solution Concentration:</label>
+        <input id="solutionConc" type="range" min="1" max="5" step="1" class="w-full">
+        <div class="flex justify-between text-xs text-gray-600 dark:text-gray-400 mt-1 w-[80%] mx-auto">
+          <span>Low</span>
+          <span>Medium</span>
+          <span>High</span>
+        </div>
+      </div>
+      
+      <div class="w-full">
+        <label for="rotationSpeed" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Mop Head Rotation Speed:</label>
+        <input id="rotationSpeed" type="range" min="1" max="5" step="1" class="w-full">
+        <div class="flex justify-between text-xs text-gray-600 dark:text-gray-400 mt-1 w-[80%] mx-auto">
+          <span>Slow</span>
+          <span>Medium</span>
+          <span>Fast</span>
+        </div>
+      </div>
     </div>
-  
-    <div class="tile bg-white dark:bg-secondary-light p-6 rounded-lg shadow-md">
+    
+    <!-- Scheduling Tile -->
+    <div class="tile bg-white dark:bg-secondary-light p-6 rounded-lg shadow-md row-span-2 col-start-3">
       <h3 class="text-xl font-semibold mb-4 font-heading">Scheduling</h3>
       <button class="bg-primary text-white py-2 px-4 rounded mb-2 hover:bg-primary-dark">Set Recurring Schedule</button>
       <button class="bg-primary text-white py-2 px-4 rounded mb-4 hover:bg-primary-dark">One-Time Scheduled Cleaning</button>
@@ -194,27 +295,27 @@
     </div>
   
     <!-- Status and Monitoring Tile -->
-    <div class="tile bg-white dark:bg-secondary-light p-6 rounded-lg shadow-md">
+    <div class="tile bg-white dark:bg-secondary-light p-6 rounded-lg shadow-md row-start-3 row-span-2 col-start-1">
       <h3 class="text-xl font-semibold mb-4 font-heading text-gray-800 dark:text-gray-200">Status and Monitoring</h3>
       
       <p class="mb-2 text-gray-700 dark:text-gray-300"><strong>Battery Level: {batteryLevel}%</strong></p>
       <div class="bg-gray-200 dark:bg-gray-700 rounded-full h-4 mb-4">
-        <div class="bg-green-500 h-4 rounded-full" style="width: {batteryLevel}%"></div>
+        <div class="bg-green-500 h-4 rounded-full" style="width: {batteryLevel.toFixed(2)}%"></div>
       </div>
       
       <p class="mb-2 text-gray-700 dark:text-gray-300"><strong>Water Tank Level: {waterTankLevelPercentage}%</strong></p>
       <div class="bg-gray-200 dark:bg-gray-700 rounded-full h-4 mb-4">
-        <div class="bg-blue-500 h-4 rounded-full" style="width: {waterTankLevelPercentage}%"></div>
+        <div class="bg-blue-500 h-4 rounded-full" style="width: {waterTankLevelPercentage.toFixed(2)}%"></div>
       </div>
       
       <p class="mb-2 text-gray-700 dark:text-gray-300"><strong>Cleaning Solution Level: {cleaningSolutionLevelPercentage}%</strong></p>
       <div class="bg-gray-200 dark:bg-gray-700 rounded-full h-4 mb-4">
-        <div class="bg-purple-500 h-4 rounded-full" style="width: {cleaningSolutionLevelPercentage}%"></div>
+        <div class="bg-purple-500 h-4 rounded-full" style="width: {cleaningSolutionLevelPercentage.toFixed(2)}%"></div>
       </div>
       
       <p class="mb-2 text-gray-700 dark:text-gray-300"><strong>Cleaning Progress: {cleaningProgress}%</strong></p>
       <div class="bg-gray-200 dark:bg-gray-700 rounded-full h-4 mb-4">
-        <div class="bg-yellow-500 h-4 rounded-full" style="width: {cleaningProgress}%"></div>
+        <div class="bg-yellow-500 h-4 rounded-full" style="width: {cleaningProgress.toFixed(2)}%"></div>
       </div>
       
       <p class="mt-4 mb-2 text-gray-700 dark:text-gray-300"><strong>Estimated Time to Completion: {estimatedTime} mins</strong></p>
@@ -223,8 +324,8 @@
       </div>
     </div>
 
-  
-    <div class="tile bg-white dark:bg-secondary-light p-6 rounded-lg shadow-md">
+    <!-- Maintenance Tile -->
+    <div class="tile bg-white dark:bg-secondary-light p-6 rounded-lg shadow-md row-start-3 row-span-2 col-start-3">
       <h3 class="text-xl font-semibold mb-4 font-heading">Maintenance</h3>
       <p class="mb-2">Filter Replacement Reminder</p>
       <p class="mb-2">Mop Pad Replacement Alert</p>
@@ -233,15 +334,39 @@
       <button class="bg-primary text-white py-2 px-4 rounded mb-2 hover:bg-primary-dark">Self-Diagnosis Report</button>
       <button class="bg-primary text-white py-2 px-4 rounded hover:bg-primary-dark">Cleaning History Log</button>
     </div>
-  
-    <div class="tile bg-white dark:bg-secondary-light p-6 rounded-lg shadow-md">
-      <h3 class="text-xl font-semibold mb-4 font-heading">Performance Analytics</h3>
-      <p class="mb-2">Area Cleaned: 200 sq ft</p>
-      <p class="mb-2">Energy Consumption: 50 Wh</p>
-      <p class="mb-2">Water Usage: 10 L</p>
-      <p>Cleaning Efficiency: 90%</p>
+    
+    <!-- Performance Analytics Tile -->
+    <div class="tile bg-white dark:bg-secondary-light p-6 rounded-lg shadow-md row-start-4 row-span-1 col-start-2">
+      <h3 class="text-2xl font-semibold mb-6 font-heading text-gray-800 dark:text-gray-200">Performance Analytics</h3>
+      
+      <div class="grid grid-cols-2 gap-4 max-h-full">
+        <div class="stat-card bg-blue-50 dark:bg-blue-900 p-4 rounded-lg">
+          <p class="text-sm text-blue-600 dark:text-blue-300 mb-1">Area Cleaned</p>
+          <p class="text-2xl font-bold text-blue-800 dark:text-blue-100">200 sq ft</p>
+          <FontAwesomeIcon icon={faHome} class="text-blue-400 dark:text-blue-500 text-3xl mt-2" />
+        </div>
+        
+        <div class="stat-card bg-green-50 dark:bg-green-900 p-4 rounded-lg">
+          <p class="text-sm text-green-600 dark:text-green-300 mb-1">Energy Consumption</p>
+          <p class="text-2xl font-bold text-green-800 dark:text-green-100">50 Wh</p>
+          <FontAwesomeIcon icon={faBolt} class="text-green-400 dark:text-green-500 text-3xl mt-2" />
+        </div>
+        
+        <div class="stat-card bg-indigo-50 dark:bg-indigo-900 p-4 rounded-lg">
+          <p class="text-sm text-indigo-600 dark:text-indigo-300 mb-1">Water Usage</p>
+          <p class="text-2xl font-bold text-indigo-800 dark:text-indigo-100">10 L</p>
+          <FontAwesomeIcon icon={faWater} class="text-indigo-400 dark:text-indigo-500 text-3xl mt-2" />
+        </div>
+        
+        <div class="stat-card bg-purple-50 dark:bg-purple-900 p-4 rounded-lg">
+          <p class="text-sm text-purple-600 dark:text-purple-300 mb-1">Cleaning Efficiency</p>
+          <p class="text-2xl font-bold text-purple-800 dark:text-purple-100">90%</p>
+          <FontAwesomeIcon icon={faChartLine} class="text-purple-400 dark:text-purple-500 text-3xl mt-2" />
+        </div>
+      </div>
     </div>
   </div>
+  
 </div>
 
 <style global>
