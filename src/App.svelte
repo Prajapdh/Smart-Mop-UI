@@ -5,6 +5,12 @@
   import { SvelteToast } from '@zerodevx/svelte-toast';
   import { toast } from '@zerodevx/svelte-toast'
 
+  import DockFloorPlan from '../public/DockFloorPlan.png';
+  import Bed1FloorPlan from '../public/Bed1FloorPlan.png';
+  import Bed2FloorPlan from '../public/Bed2FloorPlan.png';
+  import LivingFloorPlan from '../public/LivingFloorPlan.png';
+  import KitchenFloorPlan from '../public/KitchenFloorPlan.png';
+
   let mopStatus = 'Idle';
   let batteryLevel = Math.floor(Math.random() * 51) + 50;
   let waterTankLevelPercentage = Math.floor(Math.random() * 51) + 25;
@@ -21,11 +27,11 @@
   let rooms = ['Dock', 'Main Bedroom', 'Guest Bedroom', 'Living Room', 'Kitchen'];
   let currentRoomIndex = 0;
   let floorPlans = [
-    { name: 'Docked', url: '../public/DockFloorPlan.png' },
-    { name: 'In Main Bedroom', url: '../public/Bed1FloorPlan.png' },
-    { name: 'In Guest Bedroom', url: '../public/Bed2FloorPlan.png' },
-    { name: 'In Living Room', url: '../public/LivingFloorPlan.png' },
-    { name: 'In Kitchen', url: '../public/KitchenFloorPlan.png' },
+    { name: 'Docked', url: DockFloorPlan },
+    { name: 'In Main Bedroom', url: Bed1FloorPlan },
+    { name: 'In Guest Bedroom', url: Bed2FloorPlan },
+    { name: 'In Living Room', url: LivingFloorPlan },
+    { name: 'In Kitchen', url: KitchenFloorPlan },
   ];
   let currentFloorPlanIndex = 0;
   let showUserProfile = false;
