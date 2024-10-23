@@ -21,6 +21,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/svelte-fontawesome": "^0.2.2",
     "@sveltejs/adapter-auto": "^3.2.5",
+    "@sveltejs/adapter-vercel": "^5.4.5",
     "@zerodevx/svelte-toast": "^0.9.6"
   }
 }

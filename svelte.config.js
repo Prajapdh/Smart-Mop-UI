@@ -1,12 +1,11 @@
-// svelte.config.js
-import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
+import adapter from '@sveltejs/adapter-vercel';
 
-const config = {
+export default {
+  // Consult https://svelte.dev/docs#compile-time-svelte-preprocess
+  // for more information about preprocessors
   preprocess: vitePreprocess(),
-
   kit: {
-    // any additional kit configuration
-  }
+    adapter: adapter(),
+  },
 };
-
-export default config;
