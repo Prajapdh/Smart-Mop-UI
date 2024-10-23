@@ -437,7 +437,7 @@
 
     <!-- Maintenance Tile -->
     <div class="tile bg-white dark:bg-secondary-light p-6 rounded-lg shadow-md row-start-3 row-span-2 col-start-3">
-      <h3 class="text-xl font-semibold mb-6 font-heading">Maintenance</h3>
+      <h3 class="text-xl font-semibold mb-6 font-heading">Mop Screen</h3>
       
       <div class="space-y-6">
         <div>
